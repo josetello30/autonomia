@@ -41,7 +41,7 @@ export function Footer() {
               <ScanFace className="h-4 w-4" aria-hidden="true" />
             </span>
             <span className="text-base font-bold text-foreground">
-              Autonom<span className="text-primary">IA</span>
+              Gest<span className="text-primary">IA</span>
             </span>
           </div>
           <p className="text-center text-sm text-muted-foreground md:text-left">
