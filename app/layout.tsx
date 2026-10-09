@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'AutonomIA — Accesibilidad por gestos faciales e IA',
+  title: 'GestIA — Accesibilidad por gestos faciales e IA',
   description:
     'Controla tus dispositivos mediante gestos faciales e inteligencia artificial. Busca comandos en lenguaje natural y encuentra el gesto perfecto para cada acción.',
   generator: 'v0.app',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: 'dark',
-  themeColor: '#0f172a',
+  themeColor: '#f3efe6',
 }
 
 export default function RootLayout({
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

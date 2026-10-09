@@ -2,6 +2,7 @@ import { NavBar } from "@/components/nav-bar"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { CommandExplorer } from "@/components/command-explorer"
 import { HowItWorks } from "@/components/how-it-works"
+import { GestureSimulator } from "@/components/gesture-simulator"
 import { Footer } from "@/components/footer"
 
 export default function Page() {
@@ -20,11 +21,16 @@ export default function Page() {
               Controla tus dispositivos con el <span className="text-primary">rostro</span>
             </h1>
             <p className="max-w-2xl text-pretty text-lg text-muted-foreground">
-              AutonomIA convierte tus gestos faciales en acciones. Describe lo que quieres hacer y encontramos el gesto
+              GestIA convierte tus gestos faciales en acciones. Describe lo que quieres hacer y encontramos el gesto
               perfecto para ti.
             </p>
           </div>
           <HeroCarousel />
+        </section>
+
+        {/* Simulador de seguimiento facial */}
+        <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+          <GestureSimulator />
         </section>
 
         {/* Búsqueda de comandos */}
