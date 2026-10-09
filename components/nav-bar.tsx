@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, ScanFace, Hand, Search, HelpCircle } from "lucide-react"
+import { Menu, X, ScanFace, Hand, Search, HelpCircle, Play } from "lucide-react"
 
 const LINKS = [
+  { label: "Simulador", href: "#simulador", icon: Play },
   { label: "Mis Gestos", href: "#mis-gestos", icon: Hand },
   { label: "Búsqueda de Comandos", href: "#busqueda", icon: Search },
   { label: "Cómo Funciona", href: "#como-funciona", icon: HelpCircle },
@@ -20,7 +21,7 @@ export function NavBar() {
             <ScanFace className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="text-lg font-bold tracking-tight text-foreground">
-            Autonom<span className="text-primary">IA</span>
+            Gest<span className="text-primary">IA</span>
           </span>
         </a>
 

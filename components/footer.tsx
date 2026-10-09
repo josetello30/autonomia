@@ -73,7 +73,7 @@ export function Footer() {
       <div className="border-t border-border py-4">
         <p className="text-center text-xs text-muted-foreground">
           {"© "}
-          {new Date().getFullYear()} AutonomIA. Tecnología inclusiva para todos.
+          {new Date().getFullYear()} GestIA. Tecnología inclusiva para todos.
         </p>
       </div>
     </footer>
