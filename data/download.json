@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "releaseDate": null,
+  "platforms": [
+    {
+      "id": "windows",
+      "label": "Windows 10 y 11 (64 bits)",
+      "url": null,
+      "size": null
+    }
+  ],
+  "requirements": [
+    "Cámara web de 720p",
+    "4 GB de memoria RAM",
+    "No necesita tarjeta gráfica dedicada"
+  ]
+}

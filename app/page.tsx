@@ -2,7 +2,8 @@ import { NavBar } from "@/components/nav-bar"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { CommandExplorer } from "@/components/command-explorer"
 import { HowItWorks } from "@/components/how-it-works"
-import { GestureSimulator } from "@/components/gesture-simulator"
+import { GestureDemo } from "@/components/demo/gesture-demo"
+import { DownloadSection } from "@/components/download-section"
 import { Footer } from "@/components/footer"
 
 export default function Page() {
@@ -28,9 +29,9 @@ export default function Page() {
           <HeroCarousel />
         </section>
 
-        {/* Simulador de seguimiento facial */}
+        {/* Demo interactiva con la cámara (P3-49) */}
         <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-          <GestureSimulator />
+          <GestureDemo />
         </section>
 
         {/* Búsqueda de comandos */}
@@ -51,6 +52,9 @@ export default function Page() {
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <HowItWorks />
         </section>
+
+        {/* Descarga (P3-50) */}
+        <DownloadSection />
       </main>
 
       <Footer />

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Menu, X, ScanFace, Hand, Search, HelpCircle, Play, Download } from "lucide-react"
 
 const LINKS = [
-  { label: "Simulador", href: "#simulador", icon: Play },
+  { label: "Demo", href: "#simulador", icon: Play },
   { label: "Mis Gestos", href: "#mis-gestos", icon: Hand },
   { label: "Búsqueda de Comandos", href: "#busqueda", icon: Search },
   { label: "Cómo Funciona", href: "#como-funciona", icon: HelpCircle },
@@ -41,7 +41,7 @@ export function NavBar() {
 
         <div className="flex items-center gap-2">
           <a
-            href="/descargar"
+            href="#descarga"
             className="hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring sm:flex"
           >
             <Download className="h-4 w-4" aria-hidden="true" />
