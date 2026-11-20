@@ -56,8 +56,22 @@ Cada pull request y cada push a `main` ejecutan el workflow [CI](.github/workflo
 | Control | Herramienta | Qué bloquea |
 |---|---|---|
 | Dependencias (P3-56) | `pnpm audit --prod --audit-level high` | Vulnerabilidades altas o críticas en dependencias de producción (las medias y bajas solo se reportan) |
+| Secretos (P3-57) | `gitleaks` sobre todo el historial | Cualquier clave, token o contraseña |
 
 **Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)) abre cada lunes PRs con las
 actualizaciones de npm y de acciones de GitHub. Una vulnerabilidad sin corrección solo se
 acepta documentada en [.github/audit-excepciones.md](.github/audit-excepciones.md) (ID, motivo
 y fecha de revisión).
+
+**Secretos en local (P3-57).** Para que gitleaks revise cada commit antes de crearlo, instale
+el hook una vez por clon (necesita Python; la primera ejecución descarga gitleaks):
+
+```bash
+pip install pre-commit==4.7.0
+pre-commit install
+```
+
+Las claves van en `.env.local` (Git lo ignora con `.env*.local`) o en las variables de entorno
+de Vercel, nunca en el código. Los falsos positivos se documentan en
+[.gitleaks.toml](.gitleaks.toml) con su motivo. Si un secreto real llegó a subirse: primero
+revóquelo en el servicio y después límpielo del historial.
