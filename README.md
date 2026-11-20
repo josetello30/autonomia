@@ -48,3 +48,16 @@ To learn more, take a look at the following resources:
 
 - **Sección de descarga** (`components/download-section.tsx`): versión, fecha, tamaño y enlaces se editan solo en
   `data/download.json`. Mientras `url` sea `null`, el botón muestra «Próximamente» y no descarga nada.
+
+## Integración continua y seguridad (Sprint 7)
+
+Cada pull request y cada push a `main` ejecutan el workflow [CI](.github/workflows/ci.yml):
+
+| Control | Herramienta | Qué bloquea |
+|---|---|---|
+| Dependencias (P3-56) | `pnpm audit --prod --audit-level high` | Vulnerabilidades altas o críticas en dependencias de producción (las medias y bajas solo se reportan) |
+
+**Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)) abre cada lunes PRs con las
+actualizaciones de npm y de acciones de GitHub. Una vulnerabilidad sin corrección solo se
+acepta documentada en [.github/audit-excepciones.md](.github/audit-excepciones.md) (ID, motivo
+y fecha de revisión).
