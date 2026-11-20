@@ -6,6 +6,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v
 
 This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
 
+> **Sprint 7 (P3-58):** `main` está protegida: los cambios, también los de v0, llegan solo por
+> pull request, con el CI en verde y 1 aprobación. Vercel publica en producción solo desde `main`;
+> cada PR genera una vista previa.
+
 [Continue working on v0 →](https://v0.app/chat/projects/prj_2CPASETCLeJX8UHhb0Zz1aQjGkh5)
 
 ## Getting Started
@@ -48,3 +52,32 @@ To learn more, take a look at the following resources:
 
 - **Sección de descarga** (`components/download-section.tsx`): versión, fecha, tamaño y enlaces se editan solo en
   `data/download.json`. Mientras `url` sea `null`, el botón muestra «Próximamente» y no descarga nada.
+
+## Integración continua y seguridad (Sprint 7)
+
+Cada pull request y cada push a `main` ejecutan el workflow [CI](.github/workflows/ci.yml):
+
+| Control | Herramienta | Qué bloquea |
+|---|---|---|
+| Dependencias (P3-56) | `pnpm audit --prod --audit-level high` | Vulnerabilidades altas o críticas en dependencias de producción (las medias y bajas solo se reportan) |
+| Secretos (P3-57) | `gitleaks` sobre todo el historial | Cualquier clave, token o contraseña |
+| Tipos (P3-58) | `tsc --noEmit` | Errores de TypeScript (`next.config.mjs` ya no los ignora al compilar) |
+| Código inseguro (SAST, P3-59) | [CodeQL](.github/workflows/codeql.yml), también cada lunes | Alertas altas o críticas (vía el ruleset); las medias y bajas se reportan en *Security → Code scanning* |
+
+**Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)) abre cada lunes PRs con las
+actualizaciones de npm y de acciones de GitHub. Una vulnerabilidad sin corrección solo se
+acepta documentada en [.github/audit-excepciones.md](.github/audit-excepciones.md) (ID, motivo
+y fecha de revisión).
+
+**Secretos en local (P3-57).** Para que gitleaks revise cada commit antes de crearlo, instale
+el hook una vez por clon (necesita Python; la primera ejecución descarga gitleaks):
+
+```bash
+pip install pre-commit==4.7.0
+pre-commit install
+```
+
+Las claves van en `.env.local` (Git lo ignora con `.env*.local`) o en las variables de entorno
+de Vercel, nunca en el código. Los falsos positivos se documentan en
+[.gitleaks.toml](.gitleaks.toml) con su motivo. Si un secreto real llegó a subirse: primero
+revóquelo en el servicio y después límpielo del historial.

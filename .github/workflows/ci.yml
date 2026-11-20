@@ -1,0 +1,88 @@
+# Integración continua de la landing: controles de seguridad en cada pull request y push a main.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # P3-56: vulnerabilidades conocidas en las dependencias de producción. Falla con gravedad
+  # alta o crítica; las de gravedad media o baja solo se reportan en el log.
+  dependencias:
+    name: Dependencias (pnpm audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: pnpm (versión de package.json)
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Reporte completo (no bloquea)
+        run: pnpm audit --prod || true
+
+      - name: Bloquear gravedad alta o crítica
+        run: pnpm audit --prod --audit-level high
+
+  # P3-57: busca claves, tokens y contraseñas en TODO el historial del repositorio.
+  # gitleaks se descarga con versión fija y se verifica su SHA-256.
+  secretos:
+    name: Secretos (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Instalar gitleaks
+        run: |
+          archivo="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$archivo" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archivo}"
+          echo "${GITLEAKS_SHA256}  ${archivo}" | sha256sum --check
+          tar -xzf "$archivo" gitleaks
+
+      - name: Escanear el historial
+        run: ./gitleaks git --config .gitleaks.toml --redact --verbose --exit-code 1 .
+
+  # P3-58: errores de tipos. next.config.mjs ya no tiene ignoreBuildErrors, así que Vercel
+  # tampoco publica si hay errores; este paso los muestra antes, en el PR.
+  tipos:
+    name: Tipos (tsc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: pnpm (versión de package.json)
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Revisar tipos
+        run: pnpm exec tsc --noEmit
