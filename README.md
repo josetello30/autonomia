@@ -81,3 +81,59 @@ Las claves van en `.env.local` (Git lo ignora con `.env*.local`) o en las variab
 de Vercel, nunca en el código. Los falsos positivos se documentan en
 [.gitleaks.toml](.gitleaks.toml) con su motivo. Si un secreto real llegó a subirse: primero
 revóquelo en el servicio y después límpielo del historial.
+
+## Dependencias sin vulnerabilidades altas ni críticas (P3-54)
+
+`pnpm audit --prod` llegó a reportar 4 vulnerabilidades críticas y 36 altas. Se corrigieron así,
+sin excepciones en [.github/audit-excepciones.md](.github/audit-excepciones.md):
+
+| Origen | Cambio | Motivo |
+|---|---|---|
+| `shadcn` | De `dependencies` a `devDependencies` | Es el CLI que genera componentes; solo hace falta al compilar (por `@import 'shadcn/tailwind.css'` en `app/globals.css`). En producción arrastraba un servidor completo (MCP SDK, express, undici…) |
+| `next` 16.3.3 | `next` 16.4.6 | Avisos críticos y altos corregidos en 16.4.x |
+| `nanoid`, `browserslist`, `source-map-js` (vía `next`) | Actualizados en `pnpm-lock.yaml` dentro de los rangos que pide `next` | Avisos altos |
+
+Resultado: `pnpm audit --prod` → *No known vulnerabilities found*. `pnpm build` compila sin
+errores, y la landing, la demo con cámara y `/descargar` funcionan igual que antes (verificado
+con Chromium y cámara simulada comparando contra la versión anterior).
+
+Para añadir componentes con el CLI, `pnpm dlx shadcn@latest add <componente>` o
+`pnpm exec shadcn add <componente>` siguen funcionando.
+
+## Cabeceras de seguridad y escaneo DAST (P3-61)
+
+[`security-headers.mjs`](security-headers.mjs) define las cabeceras que `next.config.mjs` envía
+en todas las rutas (Vercel las aplica también a las páginas estáticas):
+
+| Cabecera | Valor | Protege de |
+|---|---|---|
+| `Content-Security-Policy` | Solo `'self'` y los orígenes que usa la demo: `cdn.jsdelivr.net` (motor), `storage.googleapis.com` (modelo), Vercel Analytics y las imágenes de `/descargar`; `object-src 'none'`, `frame-ancestors 'none'` | Inyección de scripts y recursos de origen desconocido |
+| `Strict-Transport-Security` | 2 años, subdominios, `preload` | Conexiones sin HTTPS |
+| `X-Content-Type-Options` | `nosniff` | Ejecutar archivos con un tipo distinto al declarado |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Filtrar la URL completa a otros sitios |
+| `Permissions-Policy` | `camera=(self)` y el resto de sensores apagados | Que otro sitio incrustado use la cámara |
+| `X-Frame-Options` / `Cross-Origin-Opener-Policy` | `DENY` / `same-origin` | Clickjacking y ventanas de otros orígenes |
+
+Además ya no se envía `X-Powered-By: Next.js`. **Si se añade un origen nuevo** (un CDN, una
+fuente, un servicio), hay que sumarlo en `security-headers.mjs`; si no, la CSP lo bloquea y
+aparece un error «violates the following Content Security Policy directive» en la consola.
+
+`script-src` incluye `'unsafe-inline'` porque Next.js hidrata las páginas estáticas con scripts
+en línea; la alternativa (un *nonce* por petición) obligaría a renderizar en cada visita. ZAP lo
+reporta como alerta media. `'wasm-unsafe-eval'` permite el WebAssembly de MediaPipe sin abrir
+`eval()`.
+
+El workflow [DAST](.github/workflows/dast.yml) corre en cada PR, en cada push a `main` y cada
+lunes:
+
+1. Compila la landing, la inicia y revisa las cabeceras con
+   [`scripts/check-security-headers.mjs`](scripts/check-security-headers.mjs).
+2. La escanea con **OWASP ZAP baseline** y [`scripts/zap-gate.mjs`](scripts/zap-gate.mjs) falla
+   si hay alertas de riesgo **alto**; el resumen aparece en la ejecución.
+3. Guarda el reporte de ZAP (HTML, JSON y Markdown) como artefacto (`reporte-zap-build`), 30 días.
+
+Para revisar también el **sitio publicado**, defina la variable del repositorio `LANDING_URL`
+(*Settings → Secrets and variables → Actions → Variables*) con la URL de producción: el job
+*sitio publicado* repetirá la revisión y el escaneo en cada push a `main`, cada lunes y a mano
+(artefacto `reporte-zap-publicada`). Para revisar cabeceras a mano:
+`node scripts/check-security-headers.mjs https://<su-dominio>/`.
