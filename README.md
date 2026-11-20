@@ -62,6 +62,7 @@ Cada pull request y cada push a `main` ejecutan el workflow [CI](.github/workflo
 | Dependencias (P3-56) | `pnpm audit --prod --audit-level high` | Vulnerabilidades altas o críticas en dependencias de producción (las medias y bajas solo se reportan) |
 | Secretos (P3-57) | `gitleaks` sobre todo el historial | Cualquier clave, token o contraseña |
 | Tipos (P3-58) | `tsc --noEmit` | Errores de TypeScript (`next.config.mjs` ya no los ignora al compilar) |
+| Código inseguro (SAST, P3-59) | [CodeQL](.github/workflows/codeql.yml), también cada lunes | Alertas altas o críticas (vía el ruleset); las medias y bajas se reportan en *Security → Code scanning* |
 
 **Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)) abre cada lunes PRs con las
 actualizaciones de npm y de acciones de GitHub. Una vulnerabilidad sin corrección solo se
