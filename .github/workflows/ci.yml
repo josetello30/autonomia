@@ -64,3 +64,25 @@ jobs:
 
       - name: Escanear el historial
         run: ./gitleaks git --config .gitleaks.toml --redact --verbose --exit-code 1 .
+
+  # P3-58: errores de tipos. next.config.mjs ya no tiene ignoreBuildErrors, así que Vercel
+  # tampoco publica si hay errores; este paso los muestra antes, en el PR.
+  tipos:
+    name: Tipos (tsc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: pnpm (versión de package.json)
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Revisar tipos
+        run: pnpm exec tsc --noEmit

@@ -6,6 +6,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v
 
 This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
 
+> **Sprint 7 (P3-58):** `main` está protegida: los cambios, también los de v0, llegan solo por
+> pull request, con el CI en verde y 1 aprobación. Vercel publica en producción solo desde `main`;
+> cada PR genera una vista previa.
+
 [Continue working on v0 →](https://v0.app/chat/projects/prj_2CPASETCLeJX8UHhb0Zz1aQjGkh5)
 
 ## Getting Started
@@ -57,6 +61,7 @@ Cada pull request y cada push a `main` ejecutan el workflow [CI](.github/workflo
 |---|---|---|
 | Dependencias (P3-56) | `pnpm audit --prod --audit-level high` | Vulnerabilidades altas o críticas en dependencias de producción (las medias y bajas solo se reportan) |
 | Secretos (P3-57) | `gitleaks` sobre todo el historial | Cualquier clave, token o contraseña |
+| Tipos (P3-58) | `tsc --noEmit` | Errores de TypeScript (`next.config.mjs` ya no los ignora al compilar) |
 
 **Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)) abre cada lunes PRs con las
 actualizaciones de npm y de acciones de GitHub. Una vulnerabilidad sin corrección solo se
