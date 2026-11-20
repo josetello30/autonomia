@@ -81,3 +81,21 @@ Las claves van en `.env.local` (Git lo ignora con `.env*.local`) o en las variab
 de Vercel, nunca en el código. Los falsos positivos se documentan en
 [.gitleaks.toml](.gitleaks.toml) con su motivo. Si un secreto real llegó a subirse: primero
 revóquelo en el servicio y después límpielo del historial.
+
+## Dependencias sin vulnerabilidades altas ni críticas (P3-54)
+
+`pnpm audit --prod` llegó a reportar 4 vulnerabilidades críticas y 36 altas. Se corrigieron así,
+sin excepciones en [.github/audit-excepciones.md](.github/audit-excepciones.md):
+
+| Origen | Cambio | Motivo |
+|---|---|---|
+| `shadcn` | De `dependencies` a `devDependencies` | Es el CLI que genera componentes; solo hace falta al compilar (por `@import 'shadcn/tailwind.css'` en `app/globals.css`). En producción arrastraba un servidor completo (MCP SDK, express, undici…) |
+| `next` 16.3.3 | `next` 16.4.6 | Avisos críticos y altos corregidos en 16.4.x |
+| `nanoid`, `browserslist`, `source-map-js` (vía `next`) | Actualizados en `pnpm-lock.yaml` dentro de los rangos que pide `next` | Avisos altos |
+
+Resultado: `pnpm audit --prod` → *No known vulnerabilities found*. `pnpm build` compila sin
+errores, y la landing, la demo con cámara y `/descargar` funcionan igual que antes (verificado
+con Chromium y cámara simulada comparando contra la versión anterior).
+
+Para añadir componentes con el CLI, `pnpm dlx shadcn@latest add <componente>` o
+`pnpm exec shadcn add <componente>` siguen funcionando.
