@@ -1,0 +1,119 @@
+# P3-61: cabeceras de seguridad y escaneo dinámico (DAST) con OWASP ZAP.
+#
+# - En cada PR y push a main: compila la landing (el mismo build que publica Vercel, con las
+#   cabeceras de next.config.mjs), revisa las cabeceras y la escanea con ZAP baseline.
+# - Cada lunes y a mano: lo mismo, y además el sitio publicado si la variable del repositorio
+#   LANDING_URL está definida (Settings → Secrets and variables → Actions → Variables).
+# El reporte de ZAP queda como artefacto en cada ejecución; el job falla con alertas altas.
+name: DAST
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dast-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ZAP_IMAGE: ghcr.io/zaproxy/zaproxy:stable
+
+jobs:
+  build-local:
+    name: Cabeceras y ZAP (build de la landing)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: pnpm (versión de package.json)
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Compilar
+        run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+
+      - name: Iniciar la landing
+        run: |
+          nohup pnpm start -p 3000 > next.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf -o /dev/null http://localhost:3000/ && exit 0
+            sleep 1
+          done
+          cat next.log
+          exit 1
+
+      - name: Revisar cabeceras de seguridad
+        run: node scripts/check-security-headers.mjs http://localhost:3000/ http://localhost:3000/descargar http://localhost:3000/no-existe
+
+      - name: Escaneo OWASP ZAP (baseline)
+        run: |
+          mkdir -p zap && chmod 777 zap
+          # -I: los avisos no cortan el paso; la decisión la toma zap-gate.mjs (solo riesgo alto).
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+            zap-baseline.py -t http://localhost:3000 -m 2 -I \
+            -r reporte-zap.html -J reporte-zap.json -w reporte-zap.md
+
+      - name: Sin alertas altas
+        run: node scripts/zap-gate.mjs zap/reporte-zap.json
+
+      - name: Guardar reporte de ZAP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-zap-build
+          path: zap/
+          retention-days: 30
+          if-no-files-found: warn
+
+  publicada:
+    name: Cabeceras y ZAP (sitio publicado)
+    if: vars.LANDING_URL != '' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Como variable de entorno, no interpolada en el script: evita inyección de comandos.
+      LANDING_URL: ${{ vars.LANDING_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Revisar cabeceras de seguridad
+        run: node scripts/check-security-headers.mjs "$LANDING_URL"
+
+      - name: Escaneo OWASP ZAP (baseline)
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm -v "$PWD/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+            zap-baseline.py -t "$LANDING_URL" -m 2 -I \
+            -r reporte-zap.html -J reporte-zap.json -w reporte-zap.md
+
+      - name: Sin alertas altas
+        run: node scripts/zap-gate.mjs zap/reporte-zap.json
+
+      - name: Guardar reporte de ZAP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-zap-publicada
+          path: zap/
+          retention-days: 30
+          if-no-files-found: warn
