@@ -135,6 +135,13 @@ export function DownloadSection() {
                   Estamos preparando el instalador. Muy pronto podrás descargarlo desde aquí.
                 </p>
               )}
+              {available && (
+                <p className="max-w-xl text-sm leading-6 text-white/70">
+                  Si Windows muestra «Windows protegió su PC», pulsa <strong className="text-white">Más
+                  información</strong> y luego <strong className="text-white">Ejecutar de todas formas</strong>: el
+                  instalador aún no tiene firma digital.
+                </p>
+              )}
             </div>
           )}
 
@@ -146,6 +153,10 @@ export function DownloadSection() {
             <div className="flex gap-2">
               <dt className="text-white/50">Fecha</dt>
               <dd className="font-semibold">{formatDate(download.releaseDate)}</dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="text-white/50">Precio</dt>
+              <dd className="font-semibold">{download.price ?? "Por anunciar"}</dd>
             </div>
             <div className="flex gap-2">
               <dt className="text-white/50">Tamaño</dt>
@@ -200,7 +211,11 @@ export function DownloadSection() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <h3 className="font-bold">Instálala en 3 pasos</h3>
             <ol className="mt-3 flex flex-col gap-2.5 text-sm text-white/80">
-              {["Descarga el instalador.", "Ábrelo y sigue el asistente.", "Calibra tus gestos al primer inicio."].map(
+              {[
+                "Descarga el instalador. No necesitas ser administrador.",
+                "Ábrelo y sigue el asistente; deja marcado «Iniciar GestIA al encender el equipo».",
+                "Calibra tus gestos y sigue el tutorial: desde entonces GestIA se abre sola.",
+              ].map(
                 (item, index) => (
                   <li key={item} className="flex items-center gap-2.5">
                     <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
