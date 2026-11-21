@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { ChevronLeft, ChevronRight, Eye, MousePointerClick, Smile, ArrowUp, Mic, Zap } from "lucide-react"
+import { ChevronLeft, ChevronRight, Move, MousePointerClick, Eye, ArrowDownUp, CirclePause, Crosshair } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 interface Slide {
@@ -10,13 +10,14 @@ interface Slide {
   icon: LucideIcon
 }
 
+// Gestos por defecto de la app de escritorio (se pueden reasignar en la pestaña Mapeo).
 const SLIDES: Slide[] = [
-  { gesture: "Pestañeo doble", action: "Clic", icon: MousePointerClick },
-  { gesture: "Mirada arriba", action: "Scroll", icon: ArrowUp },
-  { gesture: "Sonrisa", action: "Ir al inicio", icon: Smile },
-  { gesture: "Seguimiento ocular", action: "Mover cursor", icon: Eye },
-  { gesture: "Boca abierta", action: "Dictar mensaje", icon: Mic },
-  { gesture: "Pestañeo triple", action: "Emergencia", icon: Zap },
+  { gesture: "Mover la cabeza", action: "Mover el cursor", icon: Move },
+  { gesture: "Guiño izquierdo", action: "Clic", icon: MousePointerClick },
+  { gesture: "Guiño derecho", action: "Clic derecho", icon: Eye },
+  { gesture: "Fruncir los labios", action: "Desplazar", icon: ArrowDownUp },
+  { gesture: "Cerrar los ojos", action: "Pausar", icon: CirclePause },
+  { gesture: "Levantar las cejas", action: "Recentrar", icon: Crosshair },
 ]
 
 export function HeroCarousel() {

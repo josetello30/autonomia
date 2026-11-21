@@ -80,7 +80,7 @@ export function CommandCard({ command, score }: CommandCardProps) {
                 style={{ width: `${percent}%` }}
               />
             </div>
-            <span className="text-xs font-semibold text-muted-foreground">{percent}% semantic</span>
+            <span className="text-xs font-semibold text-muted-foreground">{percent}% de coincidencia</span>
           </div>
         )}
       </div>

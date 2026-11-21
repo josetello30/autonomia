@@ -1,3 +1,4 @@
+import { Download, Play } from "lucide-react"
 import { NavBar } from "@/components/nav-bar"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { CommandExplorer } from "@/components/command-explorer"
@@ -25,6 +26,23 @@ export default function Page() {
               GestIA convierte tus gestos faciales en acciones. Describe lo que quieres hacer y encontramos el gesto
               perfecto para ti.
             </p>
+            <div className="mt-2 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+              <a
+                href="#simulador"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:brightness-110 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring sm:w-auto"
+              >
+                <Play className="size-5" aria-hidden="true" />
+                Probar la demo
+              </a>
+              <a
+                href="#descarga"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-foreground/15 bg-card px-6 py-3 text-base font-bold text-foreground transition hover:border-primary hover:text-primary focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring sm:w-auto"
+              >
+                <Download className="size-5" aria-hidden="true" />
+                Descargar para Windows
+              </a>
+            </div>
+            <p className="text-sm text-muted-foreground">Sin manos · Funciona sin internet · Tu video no sale de tu equipo</p>
           </div>
           <HeroCarousel />
         </section>

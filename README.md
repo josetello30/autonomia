@@ -50,8 +50,11 @@ To learn more, take a look at the following resources:
   // mover: cambia yaw/pitch (±0.3); clic: mouthOpen = 0.7; sin rostro: sample = null
   ```
 
-- **Sección de descarga** (`components/download-section.tsx`): versión, fecha, tamaño y enlaces se editan solo en
+- **Sección de descarga** (`components/download-section.tsx`): versión, fecha, precio, tamaño y enlaces se editan solo en
   `data/download.json`. Mientras `url` sea `null`, el botón muestra «Próximamente» y no descarga nada.
+  Hoy `url` apunta a `releases/latest/download/GestIA-Setup.exe` del repositorio GestIA (P3-24): el
+  instalador lo compila y publica el workflow «Instalador» de ese repositorio al subir un tag `vX.Y.Z`.
+  Al publicar una versión, actualiza aquí `version`, `releaseDate` y `size`.
 
 ## Integración continua y seguridad (Sprint 7)
 

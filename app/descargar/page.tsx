@@ -71,11 +71,11 @@ export default function DescargarPage() {
               GestIA convierte tus gestos faciales y movimientos de cabeza en controles precisos para el cursor, el teclado y tus frases cotidianas.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button type="button" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5">
+              <a href="/#descarga" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5">
                 <Download className="size-5" aria-hidden="true" />
                 Descargar GestIA
-              </button>
-              <span className="text-sm font-medium text-muted-foreground">Próximamente disponible para Windows</span>
+              </a>
+              <span className="text-sm font-medium text-muted-foreground">Para Windows 10 y 11 · Instalación en minutos</span>
             </div>
           </div>
         </section>
@@ -131,9 +131,9 @@ export default function DescargarPage() {
             <div>
               <div className="flex items-center gap-3 text-primary"><ShieldCheck className="size-6" aria-hidden="true" /><span className="font-bold">Accesibilidad primero</span></div>
               <h2 className="mt-4 text-3xl font-bold tracking-tight">Empieza a usar GestIA</h2>
-              <p className="mt-3 max-w-2xl text-white/70">La suscripción de GestIA tendrá un precio de <strong className="text-white">S/ 39 por uso</strong>. El botón de descarga está preparado y se activará cuando publiquemos la versión inicial.</p>
+              <p className="mt-3 max-w-2xl text-white/70">El precio de GestIA se anunciará junto con la versión inicial. Mientras tanto puedes descargarla e instalarla desde la sección de descarga.</p>
             </div>
-            <button type="button" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-white transition hover:brightness-110"><Download className="size-5" aria-hidden="true" />Descargar por S/ 39</button>
+            <a href="/#descarga" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-white transition hover:brightness-110"><Download className="size-5" aria-hidden="true" />Descargar GestIA</a>
           </div>
         </section>
       </main>
