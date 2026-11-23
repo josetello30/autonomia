@@ -131,7 +131,7 @@ export default function DescargarPage() {
             <div>
               <div className="flex items-center gap-3 text-primary"><ShieldCheck className="size-6" aria-hidden="true" /><span className="font-bold">Accesibilidad primero</span></div>
               <h2 className="mt-4 text-3xl font-bold tracking-tight">Empieza a usar GestIA</h2>
-              <p className="mt-3 max-w-2xl text-white/70">El precio de GestIA se anunciará junto con la versión inicial. Mientras tanto puedes descargarla e instalarla desde la sección de descarga.</p>
+              <p className="mt-3 max-w-2xl text-white/70">Un único pago de S/ 39 (compra simulada, sin tarjeta) para hasta 3 computadoras. Crea tu cuenta, activa la licencia y descarga el instalador.</p>
             </div>
             <a href="/#descarga" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-white transition hover:brightness-110"><Download className="size-5" aria-hidden="true" />Descargar GestIA</a>
           </div>

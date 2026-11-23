@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/how-it-works"
 import { GestureDemo } from "@/components/demo/gesture-demo"
 import { DownloadSection } from "@/components/download-section"
 import { Footer } from "@/components/footer"
+import { publicDownload } from "@/lib/download"
 
 export default function Page() {
   return (
@@ -72,7 +73,7 @@ export default function Page() {
         </section>
 
         {/* Descarga (P3-50) */}
-        <DownloadSection />
+        <DownloadSection download={publicDownload()} />
       </main>
 
       <Footer />
