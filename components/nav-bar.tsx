@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, ScanFace, Hand, Search, HelpCircle, Play, Download } from "lucide-react"
+import { Menu, X, ScanFace, Hand, Search, HelpCircle, Play, Download, CircleUser } from "lucide-react"
 
 const LINKS = [
   { label: "Demo", href: "#simulador", icon: Play },
@@ -40,6 +40,13 @@ export function NavBar() {
         </ul>
 
         <div className="flex items-center gap-2">
+          <a
+            href="/cuenta"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            <CircleUser className="h-4 w-4" aria-hidden="true" />
+            Mi cuenta
+          </a>
           <a
             href="#descarga"
             className="hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring sm:flex"

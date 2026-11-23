@@ -140,3 +140,25 @@ Para revisar también el **sitio publicado**, defina la variable del repositorio
 *sitio publicado* repetirá la revisión y el escaneo en cada push a `main`, cada lunes y a mano
 (artefacto `reporte-zap-publicada`). Para revisar cabeceras a mano:
 `node scripts/check-security-headers.mjs https://<su-dominio>/`.
+
+## Cuentas, licencia y descarga protegida (Sprint 8: P3-62 y P3-63)
+
+- **Supabase** (un solo proyecto para la landing y la app de escritorio): esquema en
+  [`supabase/`](supabase/README.md). RLS en todas las tablas; las escrituras van por funciones que
+  solo actúan sobre la cuenta con sesión.
+- **Rutas nuevas:** `/cuenta/ingresar` (iniciar sesión / crear cuenta), `/cuenta` (licencia,
+  computadoras activadas, cerrar sesión), `/cuenta/comprar` (compra simulada de S/ 39, sin datos de
+  tarjeta), `/auth/callback` (enlace del correo de confirmación) y `/api/descargar`.
+- **Descargar:** el botón va a `/api/descargar`. Sin sesión → iniciar sesión o registrarse; sin
+  compra → comprar; con compra → instalador. El enlace del instalador no se envía al navegador.
+- La sesión vive en cookies httpOnly y el navegador nunca llama a Supabase (la CSP no cambia).
+  `proxy.ts` renueva la sesión solo en las rutas de cuenta.
+
+### Configuración
+
+1. Vercel → Settings → Environment Variables (ver `.env.example`):
+   `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Si la integración de
+   Supabase con Vercel creó `SUPABASE_SERVICE_ROLE_KEY`, **bórrala**: no se usa y no debe estar ahí.
+2. Supabase → Authentication → URL Configuration: *Site URL* = dominio de la landing y en
+   *Redirect URLs* `https://<dominio>/auth/callback` (y `http://localhost:3000/auth/callback`).
+3. Para desarrollo: copiar `.env.example` como `.env.local`.

@@ -1,23 +1,16 @@
 "use client"
 
 /**
- * Sección de descarga (P3-50). La versión, los enlaces y los tamaños se leen solo de
- * data/download.json: mientras un sistema no tenga `url`, su botón dice «Próximamente».
+ * Sección de descarga (P3-50, P3-63). La versión y los tamaños vienen de data/download.json;
+ * mientras un sistema no tenga `url`, su botón dice «Próximamente». El enlace real no llega al
+ * navegador: el botón va a /api/descargar, que pide iniciar sesión y la compra antes de entregarlo.
  */
 
 import { useEffect, useState } from "react"
 import { Camera, Check, Copy, Cpu, Download, MemoryStick, Monitor, Play, ShieldCheck, Smartphone } from "lucide-react"
-import download from "@/data/download.json"
+import type { PublicDownload, PublicPlatform as Platform } from "@/lib/download"
 import { cn } from "@/lib/utils"
 
-interface Platform {
-  id: string
-  label: string
-  url: string | null
-  size: string | null
-}
-
-const PLATFORMS = download.platforms as Platform[]
 const OS_NAMES: Record<string, string> = { windows: "Windows", macos: "macOS", linux: "Linux" }
 const REQUIREMENT_ICONS = [Camera, MemoryStick, Cpu]
 
@@ -44,7 +37,7 @@ function DownloadButton({ platform, primary }: { platform: Platform; primary?: b
     "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold transition focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
     primary ? "w-full sm:w-auto" : "min-h-10 px-4 py-2 text-sm",
   )
-  if (!platform.url) {
+  if (!platform.available) {
     return (
       <button
         type="button"
@@ -59,14 +52,15 @@ function DownloadButton({ platform, primary }: { platform: Platform; primary?: b
     )
   }
   return (
-    <a href={platform.url} download className={cn(base, "bg-primary text-primary-foreground hover:brightness-110")}>
+    <a href={`/api/descargar?plataforma=${platform.id}`} className={cn(base, "bg-primary text-primary-foreground hover:brightness-110")}>
       <Download className="size-5" aria-hidden="true" />
       {primary ? `Descargar para ${platform.label.split(" ")[0]}` : platform.label}
     </a>
   )
 }
 
-export function DownloadSection() {
+export function DownloadSection({ download }: { download: PublicDownload }) {
+  const PLATFORMS = download.platforms
   const [device, setDevice] = useState<Device>({ kind: "desktop", os: "windows" })
   const [copied, setCopied] = useState(false)
 
@@ -75,7 +69,7 @@ export function DownloadSection() {
   const match = device.kind === "desktop" ? PLATFORMS.find((p) => p.id === device.os) : undefined
   const main = match ?? PLATFORMS[0]
   const others = PLATFORMS.filter((p) => p !== main)
-  const available = PLATFORMS.some((p) => p.url)
+  const available = PLATFORMS.some((p) => p.available)
 
   const copyLink = async () => {
     const link = `${window.location.origin}${window.location.pathname}#descarga`
@@ -137,6 +131,12 @@ export function DownloadSection() {
               )}
               {available && (
                 <p className="max-w-xl text-sm leading-6 text-white/70">
+                  Para descargar, inicia sesión o crea tu cuenta y activa la licencia (compra simulada,
+                  sin tarjeta). La misma cuenta sirve para entrar en la app.
+                </p>
+              )}
+              {available && (
+                <p className="max-w-xl text-sm leading-6 text-white/70">
                   Si Windows muestra «Windows protegió su PC», pulsa <strong className="text-white">Más
                   información</strong> y luego <strong className="text-white">Ejecutar de todas formas</strong>: el
                   instalador aún no tiene firma digital.
@@ -156,7 +156,7 @@ export function DownloadSection() {
             </div>
             <div className="flex gap-2">
               <dt className="text-white/50">Precio</dt>
-              <dd className="font-semibold">{download.price ?? "Por anunciar"}</dd>
+              <dd className="font-semibold">{download.price ? `${download.price} · pago único` : "Por anunciar"}</dd>
             </div>
             <div className="flex gap-2">
               <dt className="text-white/50">Tamaño</dt>
@@ -212,9 +212,9 @@ export function DownloadSection() {
             <h3 className="font-bold">Instálala en 3 pasos</h3>
             <ol className="mt-3 flex flex-col gap-2.5 text-sm text-white/80">
               {[
-                "Descarga el instalador. No necesitas ser administrador.",
+                "Crea tu cuenta, activa la licencia y descarga el instalador. No necesitas ser administrador.",
                 "Ábrelo y sigue el asistente; deja marcado «Iniciar GestIA al encender el equipo».",
-                "Calibra tus gestos y sigue el tutorial: desde entonces GestIA se abre sola.",
+                "Inicia sesión en la app, calibra tus gestos y sigue el tutorial: desde entonces GestIA se abre sola.",
               ].map(
                 (item, index) => (
                   <li key={item} className="flex items-center gap-2.5">
@@ -230,7 +230,7 @@ export function DownloadSection() {
 
           <p className="flex items-start gap-2.5 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm leading-6 text-white/85">
             <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-            Funciona sin internet y el video de tu cámara nunca sale de tu equipo.
+            Tras activarla funciona sin internet (valida la licencia cada 30 días) y el video de tu cámara nunca sale de tu equipo.
           </p>
         </div>
       </div>
