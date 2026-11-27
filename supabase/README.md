@@ -8,12 +8,18 @@ Un solo proyecto de Supabase para la landing y la app de escritorio: la misma cu
 | `devices` | Equipos donde la app activó la licencia (máximo 3). Solo se guarda un hash SHA-256 del equipo. |
 | `simulate_purchase()` | La landing la llama al «comprar». Idempotente. |
 | `activate_device(hash, etiqueta)` | La app la llama al iniciar sesión y, como mucho, cada 30 días. |
+| `usage_reports` | P3-30: uso diario anónimo de la app, solo si la persona aceptó métricas. Un registro por instalación y día; `install_id` es aleatorio y no está ligado a ninguna cuenta. |
+| `feedback` | P3-30: comentarios enviados desde la app (tipo, mensaje y correo solo si la persona lo escribió). |
+| `submit_usage_report(reporte)`, `submit_feedback(comentario)` | La app las llama con la clave publicable (sin sesión). Validan cada clave y rango; rechazan lo demás. |
+| `impacto_diario` | Vista para el equipo y las organizaciones aliadas: instalaciones activas, sesiones y minutos por día. Solo se lee desde el panel. |
 
 ## Seguridad
 
 - RLS activado: cada cuenta solo ve sus filas. Nadie escribe directo en las tablas; las funciones
   `SECURITY DEFINER` solo actúan sobre `auth.uid()` (el aviso 0029 del asesor de Supabase es intencional).
-- `anon` no puede llamar a las funciones ni leer las tablas.
+- `anon` no puede llamar a las funciones de licencia ni leer las tablas. Solo puede ejecutar
+  `submit_usage_report` y `submit_feedback` (P3-30), que escriben datos anónimos validados;
+  `usage_reports`, `feedback` e `impacto_diario` no se pueden leer desde la API.
 - La clave `service_role` **no** se usa en ningún sitio: ni en el código, ni en la app, ni en Vercel.
   La landing y la app solo usan la clave publicable.
 
